@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: honey-backend
+  namespace: honey-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: honey-backend
+  template:
+    metadata:
+      labels:
+        app: honey-backend
+    spec:
+      containers:
+        - name: honey-backend
+          image: mohammadsadeg/honey-backend:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: honey-secrets
+                  key: MONGO_URI
+          resources:
+            requests:
+              cpu: "1"
+              memory: "2Gi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"

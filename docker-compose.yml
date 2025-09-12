@@ -1,0 +1,22 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: se_mongo
+    ports:
+      - "27017:27017"
+
+  web:
+    build: .
+    container_name: se_web
+    depends_on:
+      - mongo
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # اگر .env ست نشده باشد، این مقدار استفاده می‌شود
+      MONGO_URI: "mongodb://mongo:27017/honey"
+    volumes:
+      - .:/app
+    command: python backend/manage.py runserver 0.0.0.0:8000

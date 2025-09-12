@@ -1,0 +1,68 @@
+========================================
+SQLite (Relational - for User & Addresses)
+========================================
+
+User
+- id (PK)
+- username
+- email
+- first_name
+- last_name
+- phone_number
+- password
+
+Address
+- id (PK)
+- user_id (FK → User.id)
+- name
+- address
+- city
+- state
+- country
+- postal_code
+- is_default
+- created_at
+- updated_at
+
+========================================
+MongoDB (Document - for Catalog & Orders)
+========================================
+
+Category 
+- name
+- slug
+- description
+- parent_id (nullable)
+
+Product 
+- title
+- category_id 
+- slug
+- price
+- description
+- images []
+- status 
+- modified_at
+
+Review 
+- user_id 
+- product_id 
+- rating
+- comment
+- date
+
+Cart 
+- user_id 
+- items
+- total_amount
+
+Order 
+- user_id 
+- items 
+- total_amount
+- payment_status
+- order_status
+- description
+- address_id
+- order_number
+- date

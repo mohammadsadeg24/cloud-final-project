@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - Pure Honey Shop{% endblock %}
+
+{% block content %}
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1><i class="fas fa-shopping-cart"></i> Shopping Cart</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                            <li class="breadcrumb-item active"><a href="{% url 'cart' %}">Cart</a></li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Content -->
+    <section class="cart-section">
+        <div class="container">
+            {% if cart %}
+            <div class="row">
+                <!-- Cart Items -->
+                <div class="col-lg-8">
+                    <div class="cart-items">
+                        <div class="cart-header">
+                            <h4>Cart Items ({{ cart.items|length }} item{{ cart.items|length|pluralize }})</h4>
+                        </div>
+                        
+                        {% for item in cart.items %}
+                        <div class="cart-item" data-item-id="{{ item.id }}">
+                            <div class="item-image">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/1.png' %}" alt="{{ item.product.name }}">
+                                {% endif %}
+                            </div>
+                            
+                            <div class="item-details">
+                                <h5><a href="{% url 'product_detail' item.slug %}">{{ item.title }}</a></h5>
+                                <p class="item-price">
+                                    <span class="unit-price">${{ item.price|floatformat:2 }}</span>
+                                </p>
+                                
+                                <!-- Product Features -->
+                                {% if item.product.features %}
+                                <div class="item-features">
+                                    {% for feature in item.product.features|slice:":2" %}
+                                    <span class="feature-tag">{{ feature }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="item-quantity">
+                                <label class="form-label">Quantity:</label>
+                                <div class="total-price">{{ item.quantity }}</div>
+                            </div>
+                            
+                            <div class="item-total">
+                                <div class="total-price">${{ item.total_amount|floatformat:2 }}</div>
+                                <form method="POST" action="{% url 'remove_from_cart' item.slug %}" style="display:inline;">
+                                {% csrf_token %}
+                                    <button class="btn btn-outline-danger btn-sm remove-item" onclick="removeItem({{ item.slug }})">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button> 
+                                </form>
+                            </div>
+
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Cart Actions -->
+                        <div class="cart-actions">
+                            <a href="{% url 'shop' %}" class="btn btn-outline-honey">
+                                <i class="fas fa-arrow-left"></i> Continue Shopping
+                            </a>
+                            <form method="POST" action="{% url 'clear_cart' %}" style="display:inline;">
+                            {% csrf_token %}
+                                <button class="btn btn-outline-secondary"">
+                                    <i class="fas fa-trash-alt"></i> Clear Cart
+                                </button> 
+                            </form>
+                        </div> 
+                    </div>
+                </div>
+                
+                <!-- Cart Summary -->
+                <div class="col-lg-4">
+                    <div class="cart-summary">
+                        <h4>Order Summary</h4>
+                        
+                        <div class="summary-line">
+                            <span>Subtotal ({{ cart.items|length }} item{{ cart_items|length|pluralize }}):</span>
+                            <span class="subtotal">${{ cart.subtotal|floatformat:2 }}</span>
+                        </div>
+                        
+                        <div class="summary-line">
+                            <span>Shipping:</span>
+                            <span class="shipping-cost">
+                                ${{ cart.shipping|floatformat:2 }}
+                            </span>
+                        </div>
+                        
+                        <div class="summary-line">
+                            <span>Tax:</span>
+                            <span class="tax">${{ cart.tax|floatformat:2 }}</span>
+                        </div>
+                        
+                        
+                        <div class="summary-line">
+                            <span><strong>Total:</strong></span>
+                            <span><strong class="total-amount">${{ cart.total|floatformat:2 }}</strong></span>
+                        </div>
+                        
+                        <!-- Checkout Button -->
+                        <div class="checkout-section">
+                            <a href="{% url 'checkout' %}" class="btn btn-honey btn-lg w-100">
+                                <i class="fas fa-credit-card"></i> Proceed to Checkout
+                            </a>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+            
+            {% else %}
+            <!-- Empty Cart -->
+            <div class="empty-cart">
+                <div class="text-center">
+                    <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+                    <h3>Your cart is empty</h3>
+                    <p class="text-muted">Looks like you haven't added any items to your cart yet.</p>
+                    <a href="{% url 'shop' %}" class="btn btn-honey btn-lg">
+                        <i class="fas fa-store"></i> Start Shopping
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
